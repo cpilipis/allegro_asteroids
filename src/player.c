@@ -4,7 +4,7 @@
 #include "sound.h"
 #include "particle.h"
 #include <allegro5/allegro.h>
-
+//This type stores everything we need in a player.
 typedef struct player
 {
   double dir; //Dir is in radians. We will use it to do math on the player's direction to do stuff with velocity
@@ -13,48 +13,46 @@ typedef struct player
   int respawn; //respawn timer after the player is killed
   coor location;
   coor velocity;
-  int oneUpScore;
+  int oneUpScore; //How many points the player must earn to get a one-up
   float power; //how fast this player flies
-  int maxBullets; //how many shots this player can have spawned at once
-  int bullet; //how many shots this player does have at once
-  bool canFire; //Can the player fire this frame?
+  bool canFire; //Can the player fire the weapon in this tick?
   //This variable will be used to make sure the player can't hold the space key to spam lasers.
 } player;
 
 player newPlayer()
-{
+{ //create a basic player
   player myPlayer;
   myPlayer.location.x = SCREEN_W/2;
   myPlayer.location.y = SCREEN_H/2;
   myPlayer.velocity.x = 0;
-  myPlayer.velocity.y = 0;
-  myPlayer.dir = 0;
-  myPlayer.score = 0;
-  myPlayer.lives = 3;
-  myPlayer.respawn = 360;
-  myPlayer.power = .1;
-  myPlayer.maxBullets = 5;
-  myPlayer.oneUpScore = 10000;
-  myPlayer.bullet = 0;
-  myPlayer.canFire = true;
+  myPlayer.velocity.y = 0; //go to the middle of the screen stood completely still
+  myPlayer.dir = PI/2; //face completely up
+  myPlayer.lives = 3; //start with 3 respawns
+  myPlayer.respawn = 360; //Set the respawn timer to 6 seconds so that we have a sec to see where the asteroids are and then 5 seconds of invulnerability to react.
+  myPlayer.power = .1; //How fast the player accelerates
+  myPlayer.score = 0; //start with 0 score
+  myPlayer.oneUpScore = 10000; //every 10000 points, the player gets a new life
+  myPlayer.canFire = true; //The player can fire immediately after spawning in
   return myPlayer;
 }
 
 void killPlayer(player * p)
-{
+{ //A function to kill the player when we know the player is touching an asteroid or something
   printf("Looks like the player has died!");
-  playExplosion();
+  playExplosion(); //Play an explosion sound
   if (p->lives > 0)
-  {
+  { //If the player has lives left
     printf(" Respawning...\n");
-    p->lives--;
+    p->lives--; //take a life
     p->respawn = 600; //600 ticks at 60 ticks a second would be 10 seconds
     //keep in mind that the player comes back at 300 ticks left and can fly around without limitation
     //but is invulnerable until p->respawn = 0
+    //so, the player respawns with 5 seconds of spawn protection
     p->location.x = SCREEN_W/2;
-    p->location.y = SCREEN_H/2;
+    p->location.y = SCREEN_H/2; //put the player in the middle of the screen
     p->velocity.x = 0;
-    p->velocity.y = 0;
+    p->velocity.y = 0; //stop the player's movement
+    p->dir = PI/2;
   }
   else
   {
@@ -65,8 +63,12 @@ void killPlayer(player * p)
 }
 
 bool playerVsAst(player * p, ast * a, bool checkOnly)
-{
+{ //Check if a player is inside an asteroid
   coor pVerts[6]; //Shorthand for Player Veriticies
+  //We'll get all the corners of the player's ship first
+  //then we'll get the virtices between them
+  //because if we don't small asteroids will be able to fly through the middle of the player
+  //without harming the player.
   pVerts[0].x = cos(p->dir) * 22 + p->location.x;
   pVerts[0].y = sin(p->dir) * 22 + p->location.y;
   pVerts[1].x = cos(p->dir + PI/2) * 8 + p->location.x;
@@ -78,16 +80,18 @@ bool playerVsAst(player * p, ast * a, bool checkOnly)
   pVerts[5] = midpoint(pVerts[0], pVerts[2]);
   bool asteroidHit = false;
   for (int i = 0; i < 6; i++)
-  {
+  { //for each collision point
     if(isInAsteroid(pVerts[i], a->location, a->size) && a->size != 0)
-    {
+    { //if this vertice is actually in the asteroid
       asteroidHit = true;
-      particleExplosion(pVerts[i], 255, 165, 0);
+      if(!checkOnly){particleExplosion(pVerts[i], 255, 165, 0);}
       break;
     }
   }
   if (asteroidHit && !checkOnly)
-  {
+  { //If the player hit the asteroid and this function was not just being called as a collision test rather than a collision check
+    //Sometimes I call this to check if an asteroid being spawned would spawn kill the player, and thus I set "Check Only" to true
+    //That way I can simply check whether a player would die instead of having it happen.
     printf("Player was hit by an asteroid at (%f, %f), with a size of %d\n",a->location.x, a->location.y, a->size);
     killPlayer(p);
     return true;

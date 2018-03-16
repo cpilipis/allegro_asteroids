@@ -4,15 +4,15 @@
 #include "asteroid.h"
 
 typedef struct bullet
-{
+{ //the type for the laser the player fires
   coor velocity;
   coor location;
-  int age; //used to despawn bullets
+  int age; //used to despawn bullets after a time, ticks down to 0
   player *parent;
 }bul;
 
 bul fire(player * p)
-{
+{ //Put a shot at the tip of the player's ship with the player's velocity direction.
   bul shot;
   //Spawn a bullet at the tip of the player ship's nose
   shot.location.x = cos(p->dir) * 25 + p->location.x;
@@ -27,7 +27,7 @@ bul fire(player * p)
 
 
 bul updateShot(bul * b)
-{
+{ //Move a shot by its velocity an loop it around the screen.
   b->location.x += b->velocity.x;
   b->location.y += b->velocity.y;
   b->location.x = b->location.x > SCREEN_W + 35 ? b->location.x - (SCREEN_W + 60) : b->location.x;
@@ -35,7 +35,7 @@ bul updateShot(bul * b)
   b->location.x = b->location.x < -35 ? b->location.x + (SCREEN_W + 60) : b->location.x;
   b->location.y = b->location.y < -35 ? b->location.y + (SCREEN_H + 60) : b->location.y;
   if (b->age != 0)
-  {
+  { //oh, and age the shot.
     b->age--;
   }
   return *b;
@@ -43,7 +43,9 @@ bul updateShot(bul * b)
 
 
 ast checkAst(ast * a, bul * shot)
-{
+{ //Check if the shot is inside an asteroid
+  //if so, we'll return two asteroids, one that is alive and may or may not be split up,
+  //and another that may or may not be a live asteroid or a dead filler.
   float shotX = shot->location.x;
   float shotY = shot->location.y;
   float astX = a->location.x;
@@ -52,13 +54,12 @@ ast checkAst(ast * a, bul * shot)
   {
     //return the split up new asteroids
     shot->age = 0;//kill the shot
-    shot->parent->score += 100 - a->size;
-    if (shot->parent->score > shot->parent->oneUpScore){shot->parent->oneUpScore += 10000; shot->parent->lives++;}
-    coor thing;
+    shot->parent->score += 100 - a->size; //reward the player who fired the asteroid with points
+    if (shot->parent->score > shot->parent->oneUpScore){shot->parent->oneUpScore += 10000; shot->parent->lives++;} //If the score is enough for a one-up, grant a one-up
     return breakAsteroid(a, shot->velocity);
   }
   else
-  {
+  { //If the shot isn't in an asteroid
     //return a filler asteroid with size 0 anyways
     ast b;
     b.location = a->location;

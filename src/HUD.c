@@ -5,42 +5,47 @@
 
 ALLEGRO_FONT * scoreFont;
 ALLEGRO_FONT * titleFont;
-ALLEGRO_FONT * infoFont;
+ALLEGRO_FONT * infoFont; //initialize some pointers to store fonts
 void initHud()
 {
   scoreFont = al_load_ttf_font("gameFont.otf", 36, 0);
   titleFont = al_load_ttf_font("gameFont.otf", 72, 0);
-  infoFont = al_load_ttf_font("gameFont.otf", 20, 0);
+  infoFont = al_load_ttf_font("gameFont.otf", 20, 0); //it's all the same font, but in different sizes
 }
 
 void killHud()
 {
   al_destroy_font(scoreFont);
+  al_destroy_font(infoFont);
+  al_destroy_font(titleFont);
 }
-
-//const ALLEGRO_FONT scoreFont = al_load_font("gameFont.otf", 14, 0);
 
 void drawPlayerHud(int score, int lives)
 {
-  char scoreText[20];
+  //create a placeholder string to store the "SCORE: insertnumberhere" thing we display
+  //With 8 characters allocated for the "Score: " and null terminator in the string, we can store up to a 16 digit number for the player's score.
+  char scoreText[24];
   sprintf(scoreText, "Score: %d", score);
-  al_draw_text(scoreFont, al_map_rgb(255, 255, 255), 10, 10, 0, scoreText);
-  al_draw_text(scoreFont, al_map_rgb(255, 255, 255), 10, 40, 0, "Lives: ");
+  al_draw_text(scoreFont, al_map_rgb(255, 255, 255), 10, 10, 0, scoreText); //print the score thing
+  al_draw_text(scoreFont, al_map_rgb(255, 255, 255), 10, 40, 0, "Lives: "); //we'll print that word and then show the player's lives.
   if (lives > 0)
-  {
+  { //print the lives one by one as green triangles representing the player's ship
     for (int i = 0; i < lives; i++)
     {
-      int startX = i * 30 + 85;
+      int startX = i * 20 + 95;
       al_draw_triangle(startX, 65, startX + 7, 40, startX + 15, 65, al_map_rgb(100, 255, 0), 0);
     }
   }
   else if (lives == -1)
   {
+   //print the game over screen
     al_draw_text(scoreFont, al_map_rgb(255, 0, 0), SCREEN_W/2 - 50, SCREEN_H/2 - 18, 0, "Game Over");
-  }
+  } //if the player has died with no lives left, it'll go to -1
+  //that's how we know the player has died and lost the game
 }
 void menu()
 {
+  //print the instructions for the main menu
   al_draw_text(titleFont, al_map_rgb(255, 255, 255), SCREEN_W/2, 100, ALLEGRO_ALIGN_CENTRE, "ASTEROIDS");
   al_draw_text(scoreFont, al_map_rgb(255, 255, 255), SCREEN_W/2, 300, ALLEGRO_ALIGN_CENTRE, "Press any key to begin");
   al_draw_text(infoFont, al_map_rgb(255, 255, 255), 20, 400, 0, "Controls:");
@@ -56,6 +61,7 @@ void menu()
 }
 void drawPaused()
 {
+  //draw game paused text
   al_draw_text(scoreFont, al_map_rgb(255, 255, 255), SCREEN_W/2 - 50, SCREEN_H/2 - 18, 0, "Game paused...");
   al_draw_text(scoreFont, al_map_rgb(255, 255, 255), SCREEN_W/2 - 75, SCREEN_H/2 + 18, 0, "Push Escape to resume");
 }

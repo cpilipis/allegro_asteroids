@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <allegro5/allegro.h>
-
+//Create a new variable type, the coordinate
+//this will represent a point in a 2D space and will be used not just for positions, but also for velocity
 typedef struct coordinate
 {
   float x;
@@ -17,7 +18,7 @@ coor midpoint(coor c1, coor c2)
 }
 
 bool isInAsteroid(coor objPt, coor astPt, int astSize)
-{
+{ //a function to check if a coordinate is within the space of an asteroid
   if(abs(objPt.x - astPt.x) < astSize && abs(objPt.y - astPt.y) < astSize)
   {
     return true;
