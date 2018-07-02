@@ -8,9 +8,9 @@ ALLEGRO_SAMPLE_ID thrustSoundID; //define some sound placeholders
 void initSounds()
 { //reserve some sound samples to play sounds and register the different sound files.
   al_reserve_samples(8);
-  explosionSound = al_load_sample_f(al_fopen("explosion.ogg", "r"), ".ogg");
-  shotSound = al_load_sample_f(al_fopen("laser.wav", "r"), ".wav");
-  thrustSound = al_load_sample_f(al_fopen("thrust.wav", "r"), ".wav");
+  explosionSound = al_load_sample_f("explosion.ogg");
+  shotSound = al_load_sample_f("laser.wav");
+  thrustSound = al_load_sample_f("thrust.wav");
 }
 
 //different functions for playing sounds
