@@ -1,4 +1,4 @@
-# Blehmeh98's Allegro Asteroids
+# Chandler's Allegro Asteroids
 A clone of the game Asteroids, written in C with the Allegro development library
 
 # Dependencies
@@ -22,6 +22,12 @@ I have no clue how any of this would work on Windows, although Allegro does supp
 - Please help
 
 # What's Next
-- I might add a seperate explosion sound effect for when the player blows up as opposed to when the asteroids blow up. That way you can hear it's you exploding and not an asteroid.
-- I might add a highscore system where it stores high scores in a text file.
-- I might ACTUALLY FIGURE OUT HOW TO COMPILE AND DISTRIBUTE THIS AS A STANDALONE EXECUTABLE FOR ONCE...
+- Nothing, because I haven't touched any of this code in 4 years. That being said . . . 
+# Potential Improvements if I were to make some
+- Shorten the time to respawn. Some playtesters thought the game softlocked for a moment after the player died. 5 seconds is too long to reappear.
+- Add a seperate explosion sound effect for when the player blows up as opposed to when the asteroids blow up. This should make it easier to tell apart asteroid destruction and the player's death in chaotic gameplay.
+- Impose reasonable limits and tampers on an asteroid's velocity when splitting up, as well as perhaps a little bit of random direction to the new asteroid chunks.
+- Or, add different asteroid types that split in different directions or even different quantities when shot. 
+- Make the asteroids more interesting to look at by adding different rugged shapes.
+- Add a highscore system where it stores high scores in a text file, or perhaps even a binary file to discourage user tampering.
+- Distribute some kind of package of this that runs on Windows, Mac, and most major Linux distributions
